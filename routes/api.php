@@ -1,16 +1,18 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\GoodsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\IncomingGoodsController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-Route::get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+});
+Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
 // Route::get('/goods/get-pdf', [GoodsController::class, 'download'])->name('goods.download');
 Route::resource('goods', GoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);

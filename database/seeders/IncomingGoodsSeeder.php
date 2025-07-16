@@ -20,7 +20,7 @@ class IncomingGoodsSeeder extends Seeder
                 'incoming_goods_item_id' => 1,
                 'goods_id' => 3,
                 'batch_number' => '72816',
-                'qty' => 30,
+                'qty' => 30, //strip (2*15)
                 'selling_price' => 8000,
                 'purchase_price' => 6300,
                 'expiry_date' => Carbon::create(2025, 7, 31),
