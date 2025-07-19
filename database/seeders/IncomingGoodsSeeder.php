@@ -219,7 +219,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 2,
             'invoice' => 'INV-2501002',
-            'received_date' => Carbon::create(24,7,1),
+            'received_date' => Carbon::create(2024,7,1),
             'amount' => 46000,
             'created_by' => 1,
             ])
@@ -234,7 +234,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 3,
             'invoice' => 'INV-2501003',
-            'received_date' => Carbon::create(24,8,1),
+            'received_date' => Carbon::create(2024,8,1),
             'amount' => 140000,
             'created_by' => 1,
             ])
@@ -249,7 +249,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 1,
             'invoice' => 'INV-2501004',
-            'received_date' => Carbon::create(24,9,1),
+            'received_date' => Carbon::create(2024,9,1),
             'amount' => 51000,
             'created_by' => 1,
             ])
@@ -264,7 +264,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 2,
             'invoice' => 'INV-2501005',
-            'received_date' => Carbon::create(24,10,1),
+            'received_date' => Carbon::create(2024,10,1),
             'amount' => 93000,
             'created_by' => 1,
             ])
@@ -279,7 +279,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 3,
             'invoice' => 'INV-2501006',
-            'received_date' => Carbon::create(24,11,1),
+            'received_date' => Carbon::create(2024,11,1),
             'amount' => 18500,
             'created_by' => 1,
             ])
@@ -294,7 +294,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 1,
             'invoice' => 'INV-2501007',
-            'received_date' => Carbon::create(24,12,1),
+            'received_date' => Carbon::create(2024,12,1),
             'amount' => 129600,
             'created_by' => 1,
             ])
@@ -309,7 +309,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 2,
             'invoice' => 'INV-2501008',
-            'received_date' => Carbon::create(25,1,1),
+            'received_date' => Carbon::create(2025,1,1),
             'amount' => 160000,
             'created_by' => 1,
             ])
@@ -324,7 +324,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 3,
             'invoice' => 'INV-2501009',
-            'received_date' => Carbon::create(25,2,1),
+            'received_date' => Carbon::create(2025,2,1),
             'amount' => 19600,
             'created_by' => 1,
             ])
@@ -339,7 +339,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 1,
             'invoice' => 'INV-2501010',
-            'received_date' => Carbon::create(25,3,1),
+            'received_date' => Carbon::create(2025,3,1),
             'amount' => 69600,
             'created_by' => 1,
             ])
@@ -354,7 +354,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 2,
             'invoice' => 'INV-2501011',
-            'received_date' => Carbon::create(25,4,1),
+            'received_date' => Carbon::create(2025,4,1),
             'amount' => 69000,
             'created_by' => 1,
             ])
@@ -369,7 +369,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 3,
             'invoice' => 'INV-2501012',
-            'received_date' => Carbon::create(25,5,1),
+            'received_date' => Carbon::create(2025,5,1),
             'amount' => 33000,
             'created_by' => 1,
             ])
@@ -384,7 +384,7 @@ class IncomingGoodsSeeder extends Seeder
         IncomingGoods::create([
             'supplier_id' => 1,
             'invoice' => 'INV-2501013',
-            'received_date' => Carbon::create(25,6,1),
+            'received_date' => Carbon::create(2025,6,1),
             'amount' => 384600,
             'created_by' => 1,
             ])
