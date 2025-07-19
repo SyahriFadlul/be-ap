@@ -51,7 +51,7 @@ class GoodsFieldsFillerSeeder extends Seeder
         ];
 
        $conversion_large_to_medium = [
-            10, 5, 12, 10, 15, 15, 10, 10, 10, 5,  
+            10, 5, 12, 10, 15, 15, 10, 10, 10, 10,  
             2, 20, 10, 72, 10, 10, 3, 10, 25, 10, 
             2, 10, 10, 10, 10, 20, 3, 10, 10, 10, 
         ];
