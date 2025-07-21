@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\GoodsCollection;
 use App\Http\Resources\GoodsResource;
 use App\Models\Goods;
+use App\Models\GoodsBatch;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -114,4 +115,19 @@ class GoodsController extends Controller
         return $pdf->download('laporan-produk.pdf');
     }
 
+    public function selectSuggestions(Request $request)
+    {   
+        $search = $request->query('search');
+        $data = Goods::select('id','name')
+            ->where('name', 'like', '%' . $search . '%')
+            ->limit(10)
+            ->get()
+            ->toArray();
+        
+        $results = array_column($data, 'name');
+        
+            // $result =collect()
+
+        return $data;
+    }
 }
