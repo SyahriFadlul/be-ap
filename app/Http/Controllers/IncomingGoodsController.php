@@ -7,9 +7,14 @@ use App\Models\IncomingGoods;
 use App\Models\IncomingGoodsItems;
 use Illuminate\Http\Request;
 use App\Http\Resources\IncomingGoodsResource;
+use App\Services\IncomingGoodsService;
 
 class IncomingGoodsController extends Controller
-{
+{   
+    public function __construct(
+        protected IncomingGoodsService $service
+    ) {}
+
     public function index()
     {
         $data = IncomingGoods::with([
@@ -25,7 +30,7 @@ class IncomingGoodsController extends Controller
                 $query->select('id', 'name');
             },
             'createdBy:id,username'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('received_date', 'desc')
             ->paginate(10);
 
         return IncomingGoodsResource::collection($data);
@@ -37,9 +42,22 @@ class IncomingGoodsController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Logic to store new incoming goods data
-        // Validate and save the incoming goods data
+    {   
+        // return response(auth()->user()->id,500);
+        try {
+            $incoming = $this->service->store($request->all(),auth()->user());
+
+            return response()->json([
+                'message' => 'Barang masuk berhasil disimpan',
+                'data' => $incoming
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     public function show($id)

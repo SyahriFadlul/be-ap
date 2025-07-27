@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GoodsCollection;
 use App\Http\Resources\GoodsResource;
 use App\Models\Goods;
 use App\Models\GoodsBatch;
@@ -20,7 +19,23 @@ class GoodsController extends Controller
                 'batches:id,goods_id,qty'])
                 ->paginate(10);
     
-        return GoodsResource::collection($data);
+        $totalStock = GoodsBatch::sum('qty');
+
+        $categoryDistribution = Goods::getCategoryDistribution();
+
+        return response()->json([
+            'data' => GoodsResource::collection($data),
+            'meta' => [
+                'total_stock' => intval($totalStock),
+                'category_distribution' => $categoryDistribution,
+                'pagination' => [
+                    'current_page' => $data->currentPage(),
+                    'last_page' => $data->lastPage(),
+                    'per_page' => $data->perPage(),
+                    'total' => $data->total(),
+                ],
+            ]
+        ]);
     }
 
     public function show($id){
@@ -34,7 +49,7 @@ class GoodsController extends Controller
 
     public function store(Request $request){
         $validated = $request->validate([
-            'name' => 'string|required',
+            'name' => 'required|string',
             'category_id' => 'required|integer',
             'base_unit_id' => 'integer',
             'medium_unit_id' => 'integer|nullable',
@@ -42,10 +57,14 @@ class GoodsController extends Controller
             'shelf_location' => 'string|max:3|nullable',
             'conversion_medium_to_base' => 'integer|nullable',
             'conversion_large_to_medium' => 'integer|nullable',
+        ],[
+            'name.required' => 'Nama wajib diisi',
+            'category_id.required' => 'Kategori wajib dipilih',
+            'base_unit_id.required' => 'Unit terkecil wajib dipilih',
         ]);
-        return $validated;
-        // $data = Goods::create($validated);
-        // return response($data, 201);
+        // return $validated;
+        $data = Goods::create($validated);
+        return response($data, 201);
     }
 
     public function update(Request $request, $id){

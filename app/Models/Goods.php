@@ -8,6 +8,14 @@ class Goods extends Model
 {
     protected $guarded = [];
 
+    public static function getCategoryDistribution()
+    {
+        return self::selectRaw('categories.name as category, COUNT(goods.id) as total')
+            ->join('categories', 'goods.category_id', '=', 'categories.id')
+            ->groupBy('category')
+            ->get();
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

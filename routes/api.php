@@ -15,14 +15,15 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
-
-Route::get('dashboard', [GraphicsDataController::class, 'dashboardData']);
-Route::get('goods/select', [GoodsController::class, 'selectSuggestions']);
-
-// Route::get('/goods/get-pdf', [GoodsController::class, 'download'])->name('goods.download');
-Route::resource('goods', GoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('incoming-goods', IncomingGoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('supplier', SupplierController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('category', CategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('unit', UnitController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-Route::resource('users', UserController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('dashboard', [GraphicsDataController::class, 'dashboardData']);
+    Route::get('goods/select', [GoodsController::class, 'selectSuggestions']);
+    
+    // Route::get('/goods/get-pdf', [GoodsController::class, 'download'])->name('goods.download');
+    Route::resource('goods', GoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('incoming-goods', IncomingGoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('supplier', SupplierController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('category', CategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('unit', UnitController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::resource('users', UserController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+});
