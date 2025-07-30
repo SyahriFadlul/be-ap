@@ -196,24 +196,24 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 15, // strip
-                'price_per_line' => 94500,
-                'total_price' => 189000,
+                'unit_price' => 94500,
+                'line_total' => 189000,
             ],
             [
                 'goods_id' => 2, //acyclovir
                 'qty' => 5,
                 'unit_id' => 8,
                 'conversion_qty' => 5, //strip/blister
-                'price_per_line' => 32650,
-                'total_price' => 163250,
+                'unit_price' => 32650,
+                'line_total' => 163250,
             ],
             [
                 'goods_id' => 6, //alphamol
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 15,
-                'price_per_line' => 42000,
-                'total_price' => 84000,
+                'unit_price' => 42000,
+                'line_total' => 84000,
             ],
         ]);
         IncomingGoods::create([
@@ -228,8 +228,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 23000,
-                'total_price' => 46000,
+                'unit_price' => 23000,
+                'line_total' => 46000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 3,
@@ -243,8 +243,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 70000,
-                'total_price' => 140000,
+                'unit_price' => 70000,
+                'line_total' => 140000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 1,
@@ -258,8 +258,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 25500,
-                'total_price' => 51000,
+                'unit_price' => 25500,
+                'line_total' => 51000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 2,
@@ -273,8 +273,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 3, 
-                'price_per_line' => 46500,
-                'total_price' => 93000,
+                'unit_price' => 46500,
+                'line_total' => 93000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 3,
@@ -288,8 +288,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 9250,
-                'total_price' => 18500,
+                'unit_price' => 9250,
+                'line_total' => 18500,
         ]);
         IncomingGoods::create([
             'supplier_id' => 1,
@@ -303,8 +303,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 3, 
-                'price_per_line' => 64800,
-                'total_price' => 129600,
+                'unit_price' => 64800,
+                'line_total' => 129600,
         ]);
         IncomingGoods::create([
             'supplier_id' => 2,
@@ -318,8 +318,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 80000,
-                'total_price' => 160000,
+                'unit_price' => 80000,
+                'line_total' => 160000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 3,
@@ -333,8 +333,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 9800,
-                'total_price' => 19600,
+                'unit_price' => 9800,
+                'line_total' => 19600,
         ]);
         IncomingGoods::create([
             'supplier_id' => 1,
@@ -348,8 +348,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 34800,
-                'total_price' => 69600,
+                'unit_price' => 34800,
+                'line_total' => 69600,
         ]);
         IncomingGoods::create([
             'supplier_id' => 2,
@@ -363,8 +363,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 34500,
-                'total_price' => 69000,
+                'unit_price' => 34500,
+                'line_total' => 69000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 3,
@@ -378,8 +378,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 16500,
-                'total_price' => 33000,
+                'unit_price' => 16500,
+                'line_total' => 33000,
         ]);
         IncomingGoods::create([
             'supplier_id' => 1,
@@ -393,8 +393,8 @@ class IncomingGoodsSeeder extends Seeder
                 'qty' => 2,
                 'unit_id' => 8,
                 'conversion_qty' => 10, 
-                'price_per_line' => 192300,
-                'total_price' => 384600,
+                'unit_price' => 192300,
+                'line_total' => 384600,
         ]);
         
         GoodsBatch::insert($dataBatch);

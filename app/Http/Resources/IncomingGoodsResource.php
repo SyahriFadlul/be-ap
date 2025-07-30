@@ -19,19 +19,23 @@ class IncomingGoodsResource extends JsonResource
         return[
             'id' => $this->id,
             'received_date' => Carbon::parse($this->received_date)->toFormattedDateString(),
+            'supplier_id' => $this->whenLoaded('supplier')->id,
             'supplier' => $this->whenLoaded('supplier')->name,
             'invoice' => $this->invoice,
             'amount' => $this->amount,
             'items' => $this->items->map(fn ($item) => [
-                    'goods' => $item->relationLoaded('goods') ? new GoodsResource($item->goods)->name : null,
-                    'batch_number' => $item->relationLoaded('batch') ? $item->batch->batch_number : null,
-                    'qty' => $item->qty,
-                    'unit' => $item->relationLoaded('unit') ? $item->unit->name : null,
-                    'conversion_qty' => $item->conversion_qty,
-                    'price_per_line' => $item->price_per_line,
-                    'total_price' => $item->total_price,
-                ]
-            ),
+                'id' => $item->id,
+                'goods_id' => $item->relationLoaded('goods') ? new GoodsResource($item->goods)->id : null,
+                'goods' => $item->relationLoaded('goods') ? new GoodsResource($item->goods)->name : null,
+                'expiry_date' => $item->relationLoaded('batch') ? $item->batch->expiry_date : null,
+                'batch_number' => $item->relationLoaded('batch') ? $item->batch->batch_number : null,
+                'qty' => $item->qty,
+                'unit_id' => $item->relationLoaded('unit') ? $item->unit->id : null,
+                'unit' => $item->relationLoaded('unit') ? $item->unit->name : null,
+                'conversion_qty' => $item->conversion_qty,
+                'unit_price' => $item->unit_price,
+                'line_total' => $item->line_total,
+            ]),
             'created_by' => $this->whenLoaded('createdBy')->username,
         ];
     }

@@ -21,6 +21,7 @@ class OutgoingGoodsResource extends JsonResource
             'id' => $this->id,
             'date' => Carbon::parse($this->date)->toFormattedDateString(),
             'type' => $this->type,
+            'invoice' => $this->invoice,
             'note' => $this->note,
             'amount' => $this->amount,
             'items' => $this->items->map(fn ($item) => [

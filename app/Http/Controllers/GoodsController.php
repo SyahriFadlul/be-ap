@@ -70,9 +70,9 @@ class GoodsController extends Controller
     public function update(Request $request, $id){
         $goods = Goods::findOrFail($id);
         $validated = $request->validate([
-            'name' => 'string',
-            'category_id' => 'integer',
-            'base_unit_id' => 'integer',
+            'name' => 'required|string',
+            'category_id' => 'required|integer',
+            'base_unit_id' => 'required|integer',
             'medium_unit_id' => 'integer|nullable',
             'large_unit_id' => 'integer|nullable',
             'shelf_location' => 'string|max:3|nullable',
@@ -80,6 +80,7 @@ class GoodsController extends Controller
             'conversion_large_to_medium' => 'integer|nullable',
         ]);
         $goods->update($validated);
+        return $request;
         return response($goods);
     }
 
@@ -134,10 +135,10 @@ class GoodsController extends Controller
         return $pdf->download('laporan-produk.pdf');
     }
 
-    public function selectSuggestions(Request $request)
+    public function selectSuggestions(Request $request) //buat vue-select,return all id nama goods
     {   
         $search = $request->query('search');
-        $data = Goods::select('id','name')
+        $data = Goods::select('id as goods_id','name as goods')
             ->where('name', 'like', '%' . $search . '%')
             ->limit(10)
             ->get()
@@ -148,5 +149,30 @@ class GoodsController extends Controller
             // $result =collect()
 
         return $data;
+    }
+
+    public function getAvailableGoodsBatches($id)
+    {
+        // $batches = Goods::with(['batches' => fn ($q) => 
+        //     $q->where('qty', '>' , 0)])
+        //     ->findOrFail($id);
+        $batches = Goods::select('id', 'name')
+            ->with(['batches' => function ($q){
+                // $q->select('id', 'goods_id', 'batch_number', 'expiry_date');
+                $q->where('qty', '>', 0);
+                $q->orderBy('expiry_date', 'asc');
+            }])
+            ->findOrFail($id);
+        return response($batches);
+    }
+
+    public function getGoodsUnit($id)
+    {
+        $units = Goods::
+            select('id', 'name', 'base_unit_id', 'medium_unit_id', 'large_unit_id')
+            ->findOrFail($id);
+        
+
+        return $units;
     }
 }

@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OutgoingGoodsResource;
+use App\Models\Goods;
 use App\Models\OutgoingGoods;
+use App\Services\OutgoingGoodsService;
 use Illuminate\Http\Request;
 
 class OutgoingGoodsController extends Controller
 {
+    public function __construct(
+        protected OutgoingGoodsService $service
+    ) {}
+
     public function index()
     {
         $data = OutgoingGoods::with([
@@ -28,25 +34,27 @@ class OutgoingGoodsController extends Controller
         return OutgoingGoodsResource::collection($data);
     }
 
-    public function create()
-    {
-        // Logic to show form for creating new incoming goods
-    }
-
     public function store(Request $request)
     {
-        // Logic to store new incoming goods data
-        // Validate and save the incoming goods data
+        try {
+            $outgoing = $this->service->store($request->all(),auth()->user());
+
+            return response()->json([
+                'message' => 'Barang keluar berhasil disimpan',
+                'data' => $outgoing
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     public function show($id)
     {
         // Logic to show details of a specific incoming goods item
-    }
-
-    public function edit($id)
-    {
-        // Logic to show form for editing an existing incoming goods item
     }
 
     public function update(Request $request, $id)
@@ -57,5 +65,15 @@ class OutgoingGoodsController extends Controller
     public function destroy($id)
     {
         // Logic to delete an incoming goods item
+    }
+
+    public function getAvailableBatches($goodsId)
+    {
+        $batches = Batch::where('goods_id', $goodsId)
+            ->where('stock', '>', 0)
+            ->orderBy('expiry_date') // misal pakai FIFO
+            ->get(['id', 'batch_number', 'expiry_date', 'stock']);
+
+        return response()->json($batches);
     }
 }

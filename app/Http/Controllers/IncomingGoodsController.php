@@ -24,7 +24,7 @@ class IncomingGoodsController extends Controller
                 $query->select('id', 'name');
             }, 
             'items.batch' => function ($query) {
-                $query->select('id', 'incoming_goods_item_id', 'batch_number');
+                $query->select('id', 'incoming_goods_item_id', 'batch_number', 'expiry_date');
             },
             'items.unit' => function ($query) {
                 $query->select('id', 'name');
@@ -34,11 +34,6 @@ class IncomingGoodsController extends Controller
             ->paginate(10);
 
         return IncomingGoodsResource::collection($data);
-    }
-
-    public function create()
-    {
-        // Logic to show form for creating new incoming goods
     }
 
     public function store(Request $request)
@@ -65,18 +60,28 @@ class IncomingGoodsController extends Controller
         // Logic to show details of a specific incoming goods item
     }
 
-    public function edit($id)
-    {
-        // Logic to show form for editing an existing incoming goods item
-    }
-
     public function update(Request $request, $id)
     {
-        // Logic to update an existing incoming goods item
+        try {
+            $incoming = $this->service->update($request->all(), $id, auth()->user());
+
+            return response()->json([
+                'message' => 'Barang masuk berhasil dirubah',
+                'data' => $incoming
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal merubah',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     public function destroy($id)
     {
-        // Logic to delete an incoming goods item
+        $data = IncomingGoods::findOrFail($id);
+        $data->delete();
+        return response(null,204);
     }
 }

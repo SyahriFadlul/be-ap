@@ -22,4 +22,9 @@ class OutgoingGoodsItems extends Model
     {
         return $this->belongsTo(GoodsBatch::class);
     }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
 }

@@ -32,9 +32,21 @@ class CategoryController extends Controller
         return response($data, 201);
     }
 
-    public function edit()
+    public function update(Request $request, $id)
     {
+        $category = Category::findOrFail($id);
 
+        $validated = $request->validate([
+            'name' => 'required|string|unique:categories,name,' . $category->id,
+            'note' => 'nullable'
+        ],
+        [
+            'name.required' => 'Nama Kategori wajib diisi',
+            'name.unique' => 'Nama Kategori sudah ada',
+        ]);
+
+        $category->update($validated);
+        return response($category, 200);
     }
 
     public function destroy($id)
