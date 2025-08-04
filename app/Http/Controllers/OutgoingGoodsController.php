@@ -25,7 +25,7 @@ class OutgoingGoodsController extends Controller
                 $query->select('id', 'batch_number');
             },
             'items.unit' => function ($query) {
-                $query->select('id', 'name');
+                $query->select('id', 'name', 'status');
             },
             'createdBy:id,username'])
             ->orderBy('created_at', 'desc')
@@ -35,7 +35,10 @@ class OutgoingGoodsController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {   
+        return response()->json([
+            'data' => $request->all(),
+        ],500);
         try {
             $outgoing = $this->service->store($request->all(),auth()->user());
 
@@ -58,8 +61,25 @@ class OutgoingGoodsController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Logic to update an existing incoming goods item
+    {   
+        // return response()->json([
+        //     'data' => $request->all(),
+        //     'id' => $id
+        // ],500);
+        try {
+            $outgoing = $this->service->update($request->all(), $id, auth()->user());
+
+            return response()->json([
+                'message' => 'Barang keluar berhasil disimpan',
+                'data' => $outgoing
+            ], 201);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan',
+                'error' => $e
+            ], 422);
+        }
     }
 
     public function destroy($id)

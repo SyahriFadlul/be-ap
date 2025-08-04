@@ -151,18 +151,20 @@ class GoodsController extends Controller
         return $data;
     }
 
-    public function getAvailableGoodsBatches($id)
-    {
-        // $batches = Goods::with(['batches' => fn ($q) => 
-        //     $q->where('qty', '>' , 0)])
-        //     ->findOrFail($id);
+    public function getAvailableGoodsBatches(Request $request, $id)
+    {   
+        $isFifo = $request->fifo === true;
         $batches = Goods::select('id', 'name')
-            ->with(['batches' => function ($q){
+            ->with(['batches' => function ($q) use ($isFifo){
                 // $q->select('id', 'goods_id', 'batch_number', 'expiry_date');
                 $q->where('qty', '>', 0);
                 $q->orderBy('expiry_date', 'asc');
+                if($isFifo){
+                    $q->limit(1);
+                }
             }])
             ->findOrFail($id);
+        
         return response($batches);
     }
 
@@ -171,8 +173,67 @@ class GoodsController extends Controller
         $units = Goods::
             select('id', 'name', 'base_unit_id', 'medium_unit_id', 'large_unit_id')
             ->findOrFail($id);
+
+        $data = Goods::with(['baseUnit' => function ($query) {
+                $query->select('id', 'name', 'status');
+            }, 
+            'mediumUnit' => function ($query) {
+                $query->select('id', 'name', 'status');
+            },
+            'largeUnit' => function ($query) {
+                $query->select('id', 'name', 'status');
+            },
+            'batches' => function ($query) {
+                $query->select('id', 'goods_id', 'selling_price');
+            }
+            ])->select('id', 'name', 'base_unit_id', 'medium_unit_id', 'large_unit_id','conversion_medium_to_base', 'conversion_large_to_medium')
+            ->findOrFail($id);
         
 
-        return $units;
+        return $data;
+    }
+
+    public function updatebatchestobase() //migrasi qty goods batches dari medium/strip ke base/tablet
+    {
+        $goodsList = Goods::with('batches')->get();
+
+        foreach ($goodsList as $goods) {
+            $conversion = $goods->conversion_medium_to_base;
+
+            foreach ($goods->batches as $batch) {
+                $batch->qty *= $conversion;
+                $batch->save();
+            }
+        }
+
+        return response()->json([
+            'message' => 'Berhasil mengupdate qty semua batch sesuai konversi ke satuan dasar.'
+        ]);
+    }
+    public function updatepricegoodsbatches() //migrasi harga dari medium ke base
+    {
+       $batches = GoodsBatch::with('goods')->get();
+
+        foreach ($batches as $batch) {
+            $goods = $batch->goods;
+
+            if (!$goods || !$goods->conversion_medium_to_base || !$batch->purchase_price) {
+                continue;
+            }
+
+            $baseConversion = $goods->conversion_medium_to_base ?: 1;
+
+
+            $purchasePricePerBase = $batch->purchase_price / $baseConversion;
+            $purchasePricePerBase = round($purchasePricePerBase, 2); // bulatkan ke 2 digit
+            $sellingPricePerBase = $batch->selling_price / $baseConversion;
+            $sellingPricePerBase = ceil($sellingPricePerBase / 100) * 100; // bulatkan ke atas
+
+            $batch->purchase_price = $purchasePricePerBase;
+            $batch->selling_price = $sellingPricePerBase;
+            $batch->save();
+        }
+
+        return response()->json(['message' => 'Price Converted']);
     }
 }

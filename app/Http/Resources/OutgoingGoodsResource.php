@@ -25,11 +25,19 @@ class OutgoingGoodsResource extends JsonResource
             'note' => $this->note,
             'amount' => $this->amount,
             'items' => $this->items->map(fn ($item) => [
-                'outgoing_goods_id' => $item->id,
+                'outgoing_goods_items_id' => $item->id,
+                'goods_id' => $item->relationLoaded('goods') ? new GoodsResource($item->goods)->id : null,
                 'goods' => $item->relationLoaded('goods') ? new GoodsResource($item->goods)->name : null,
+                'batch_id' => $item->relationLoaded('batch') ? $item->batch->id : null,
                 'batch_number' => $item->relationLoaded('batch') ? $item->batch->batch_number : null,
-                'unit' => $item->relationLoaded('unit') ? $item->unit->name : null,
-                'qty' => $item->qty
+                'unit_id' => $item->relationLoaded('unit') ? $item->unit->id : null,
+                'unit' => $item->relationLoaded('unit') ? [
+                    'id' => $item->unit->id,
+                    'name' => $item->unit->name,
+                    'status' => $item->unit->status,
+                ] : null,
+                'qty' => $item->final_qty,
+                'unit_price' => $item->unit_price,
             ]),
             'created_by' => $this->whenLoaded('createdBy')->username,
         ];

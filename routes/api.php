@@ -16,13 +16,19 @@ use App\Http\Controllers\UserController;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth:sanctum')
+    ->name('logout');
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('dashboard', [GraphicsDataController::class, 'dashboardData']);   
 Route::get('goods/{id}/unit', [GoodsController::class, 'getGoodsUnit']); 
+Route::get('outgoing-goods/available-goods/{id}',[OutgoingGoodsController::class,'searchAvailableGoods']);
+Route::get('testeringago',[GoodsController::class,'updatebatchestobase']);
+Route::get('pricingango',[GoodsController::class,'updatepricegoodsbatches']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('goods/select', [GoodsController::class, 'selectSuggestions']);
-    Route::get('goods/{goods}/batches', [GoodsController::class, 'getAvailableGoodsBatches']);
+    Route::post('goods/{goods}/batches', [GoodsController::class, 'getAvailableGoodsBatches']);
     // Route::get('/goods/get-pdf', [GoodsController::class, 'download'])->name('goods.download');
     Route::resource('goods', GoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
     Route::resource('incoming-goods', IncomingGoodsController::class)->only(['index', 'show', 'store', 'update', 'destroy']);

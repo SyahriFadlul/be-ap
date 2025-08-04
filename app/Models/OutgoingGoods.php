@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OutgoingGoods extends Model
-{
+{   
+    use SoftDeletes;
     protected $guarded = [];
 
     public static function boot()
