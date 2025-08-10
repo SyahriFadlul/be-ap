@@ -23,13 +23,20 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|unique:suppliers,name',
-            'contact' => 'nullable',
+            'company_name' => 'required|string|unique:suppliers,company_name',
+            'company_phone' => 'required|numeric|digits:20',
+            'contact_person_name' => 'required',
+            'contact_person_phone' => 'required|numeric|digits:20',
             'note' => 'nullable',
         ],
         [
-            'name.required' => 'Nama Supplier wajib diisi',
-            'name.unique' => 'Nama Supplier sudah ada',
+            'company_name.required' => 'Nama Instansi wajib diisi',
+            'company_name.unique' => 'Nama Instansi sudah ada',
+            'company_phone.required' => 'Nomor telepon instansi wajib diisi',
+            'company_phone.numeric' => 'Nomor telepon instansi harus berupa angka',
+            'company_phone.digits' => 'Nomor telepon instansi harus terdiri dari 20 digit',
+            'contact_person_name.required' => 'Nama kontak person wajib diisi',
+            'contact_person_phone.required' => 'Nomor telepon kontak person wajib diisi',
         ]);
         // return $validated;
         $data = Supplier::create($validated);
@@ -41,13 +48,18 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|unique:suppliers,name,' . $supplier->id,
-            'contact' => 'nullable',
+            'company_name' => 'required|string|unique:suppliers,company_name,' . $supplier->id,
+            'company_phone' => 'required',
+            'contact_person_name' => 'required',
+            'contact_person_phone' => 'required',
             'note' => 'nullable',
         ],
         [
             'name.required' => 'Nama Supplier wajib diisi',
             'name.unique' => 'Nama Supplier sudah ada',
+            'company_phone.required' => 'Nomor telepon instansi wajib diisi',
+            'contact_person_name.required' => 'Nama kontak person wajib diisi',
+            'contact_person_phone.required' => 'Nomor telepon kontak person wajib diisi',
         ]);
 
         $supplier->update($validated);

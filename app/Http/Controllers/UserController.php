@@ -4,23 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function index(){
-        $data = User::all();
+        $data = User::paginate(10);
 
-        return response($data);
+        return $data->toResourceCollection();
     }
 
-    public function show(Request $request){ #req or id ?
-        $id = $request->id;
+    public function show($id){
         $user = User::find($id);
 
         return response($user);
     }
 
-    public function edit(Request $request){
+    public function update(Request $request, $id){ 
         $data = $request->validate([
 
         ]);
@@ -32,5 +32,23 @@ class UserController extends Controller
 
     public function destroy(){ #delete
 
+    }
+
+    public function getRoles()
+    {
+        $role = Role::all()->pluck('name');
+
+        return $role;
+    }
+
+    public function getUserRole($id)
+    {
+        $user = User::findOrFail($id);
+
+        $role = $user->getRoleNames();
+
+        return response()->json([
+            'role' => $role[0]
+        ],200);
     }
 }

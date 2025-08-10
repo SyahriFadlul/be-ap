@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestBroadcastEvent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,6 +13,11 @@ require __DIR__.'/auth.php';
 Route::get('/import-obat', function () {
     Excel::import(new ObatImport, storage_path('app/public/data-obat.xlsx'));
     return 'Import selesai!';
+});
+
+Route::get('/broadcast-test2', function () {
+    broadcast(new TestBroadcastEvent('halo dari laravels'));
+    return 'Event Laravel terkirim';
 });
 
 

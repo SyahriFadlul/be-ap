@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Goods;
 use App\Models\IncomingGoods;
 use App\Models\User;
 use Carbon\Carbon;
@@ -22,6 +23,8 @@ class IncomingGoodsService
                 'items.*.goods_id' => 'required|exists:goods,id',
                 'items.*.qty' => 'required|numeric|min:1',
                 'items.*.unit_id' => 'required|exists:units,id',
+                'items.*.unit' => 'required|array',
+                'items.*.unit.*.status' => 'required|in:base,medium,large',
                 'items.*.unit_price' => 'required|numeric|min:0',
                 'items.*.batch_number' => 'required|string',
                 'items.*.expiry_date' => 'required|date|after:today',
@@ -46,15 +49,17 @@ class IncomingGoodsService
                 $itemModel = $incoming->items()->create([
                     'goods_id' => $item['goods_id'],
                     'unit_id' => $item['unit_id'],
-                    'qty' => $item['qty'],
+                    'final_qty' => $item['qty'],
                     'conversion_qty' => $item['conversion_qty'],
                     'unit_price' => $item['unit_price'],
                     'line_total' => $item['qty'] * $item['unit_price'],
                 ]);
 
+                $baseConversion = Goods::findOrFail($item['goods_id'])->conversion_medium_to_base ?? 1;
+
                 $purchase_price = $item['unit_price'] / $item['conversion_qty'];
                 $selling_price = round(($purchase_price * 1.3) / 500) * 500; //keuntungan 30% dibulatkan ke 500 trdkat
-                $qty = $item['qty'] * $item['conversion_qty']; // misal 1 boks isi 10 strip,qty=20
+                $qty = $item['qty'] * $item['conversion_qty'] * $baseConversion; // misal 1 boks isi 10 strip * base conv,
 
                 $itemModel->batch()->create([
                     'goods_id' => $item['goods_id'],
@@ -118,9 +123,11 @@ class IncomingGoodsService
                     'line_total' => $item['qty'] * $item['unit_price'],
                 ]);
 
+                $baseConversion = Goods::findOrFail($item['goods_id'])->conversion_medium_to_base ?? 1;
+
                 $purchase_price = $item['unit_price'] / $item['conversion_qty'];
                 $selling_price = round(($purchase_price * 1.3) / 500) * 500; //keuntungan 30% dibulatkan ke 500 trdkat
-                $qty = $item['qty'] * $item['conversion_qty']; // misal 1 boks isi 10 strip,qty=20
+                $qty = $item['qty'] * $item['conversion_qty'] * $baseConversion; // misal 1 boks isi 10 strip * base conv
 
                 $itemModel->batch()->update([
                     'goods_id' => $item['goods_id'],

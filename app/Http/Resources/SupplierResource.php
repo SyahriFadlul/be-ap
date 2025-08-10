@@ -17,10 +17,13 @@ class SupplierResource extends JsonResource
         // return parent::toArray($request);
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'company_name' => $this->company_name ?? $this->contact_person_name,
             
             $this->mergeWhen($request->routeIs('supplier.show', 'supplier.index'), [
-                'contact' => $this->contact,
+                // 'company_name' => $this->company_name,
+                'company_phone' => $this->company_phone,
+                'contact_person_name' => $this->contact_person_name,
+                'contact_person_phone' => $this->contact_person_phone,
                 'note' => $this->note,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,

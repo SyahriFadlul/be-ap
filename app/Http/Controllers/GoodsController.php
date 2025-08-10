@@ -7,6 +7,7 @@ use App\Models\Goods;
 use App\Models\GoodsBatch;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class GoodsController extends Controller
 {
@@ -235,5 +236,28 @@ class GoodsController extends Controller
         }
 
         return response()->json(['message' => 'Price Converted']);
+    }
+
+    public function expiringGoods()
+    {
+        $today = Carbon::now();
+        $limitDate = $today->copy()->addDays(7);
+
+        // $goods = Goods::whereHas('batches',function ($q) use($limitDate) {
+        //     $q->whereDate('expiry_date', '<=', $limitDate);
+        //     // }])
+        //     // ->with(['batches' => function ($q){
+        //         $q->select(['id','goods_id','batch_number','expiry_date']);
+        //     })
+        //     ->get(['id', 'name',]);
+        
+        $goods = Goods::whereHas('batches', function ($q) use ($limitDate) {
+            $q->whereDate('expiry_date', '<=', $limitDate);
+            })->with(['batches' => function ($q) use ($limitDate) {
+            $q->whereDate('expiry_date', '<=', $limitDate)
+            ->select(['id', 'goods_id', 'batch_number', 'expiry_date']);
+            }])->get(['id', 'name']);
+
+        return response()->json($goods);
     }
 }

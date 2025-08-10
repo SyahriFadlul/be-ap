@@ -6,7 +6,9 @@ use App\Http\Resources\OutgoingGoodsResource;
 use App\Models\Goods;
 use App\Models\OutgoingGoods;
 use App\Services\OutgoingGoodsService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OutgoingGoodsController extends Controller
 {
@@ -74,10 +76,10 @@ class OutgoingGoodsController extends Controller
                 'data' => $outgoing
             ], 201);
 
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menyimpan',
-                'error' => $e
+                'error' => $e->getMessage()
             ], 422);
         }
     }
@@ -95,5 +97,41 @@ class OutgoingGoodsController extends Controller
             ->get(['id', 'batch_number', 'expiry_date', 'stock']);
 
         return response()->json($batches);
+    }    
+
+    public function download(Request $request)
+    {
+        // Ambil tanggal awal & akhir dari request
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Query join outgoing_goods & outgoing_goods_items
+        $items = DB::table('outgoing_goods_items as i')
+            ->join('outgoing_goods as g', 'g.id', '=', 'i.outgoing_goods_id')
+            ->join('goods as p', 'p.id', '=', 'i.goods_id')
+            ->join('units as u', 'u.id', '=', 'i.unit_id')
+            ->whereBetween('g.date', [$startDate, $endDate])
+            ->select(
+                'g.date',
+                'g.invoice',
+                'p.name as goods_name',
+                'u.name as unit_name',
+                'i.initial_qty',
+                'i.final_qty',
+                'i.unit_price',
+                'i.line_total'
+            )
+            ->orderBy('g.date', 'asc')
+            ->get();
+
+        // Data untuk PDF
+        $data = [
+            'items' => $items,
+            'date_range' => "$startDate s/d $endDate",
+            'printed_at' => now()->format('d-m-Y H:i'),
+        ];
+
+        $pdf = Pdf::loadView('pdf.outgoing_goods_report', $data);
+        return $pdf->download('laporan-barang-keluar.pdf');
     }
 }
