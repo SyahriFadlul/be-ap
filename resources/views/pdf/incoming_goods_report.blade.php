@@ -1,31 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Laporan Barang Masuk</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 5px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .header {
+        h2 {
             text-align: center;
             margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: left;
         }
         .meta {
             margin-bottom: 10px;
@@ -33,55 +28,56 @@
     </style>
 </head>
 <body>
-
-<div class="header">
     <h2>Laporan Barang Masuk</h2>
-</div>
 
-<div class="meta">
-    Dicetak oleh: <strong>Admin</strong><br>
-    Tanggal cetak: <strong>{{ $date }}</strong><br>
-    @if(!empty($filters['start_date']) || !empty($filters['end_date']))
-        Periode:
-        <strong>{{ $filters['start_date'] ?? '-' }}</strong> s/d 
-        <strong>{{ $filters['end_date'] ?? '-' }}</strong>
-    @endif
-</div>
+    <div class="meta">
+        Dicetak oleh: <strong>Admin</strong><br>
+        Tanggal cetak: <strong>{{ now()->format('d-m-Y H:i') }}</strong><br>
+        @if(!empty($filters['start_date']) || !empty($filters['end_date']))
+            Periode:
+            <strong>{{ $filters['start_date'] ?? '-' }}</strong> s/d 
+            <strong>{{ $filters['end_date'] ?? '-' }}</strong>
+        @endif
+    </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Tanggal Terima</th>
-            <th>No. Invoice</th>
-            <th>Supplier</th>
-            <th>Nama Barang</th>
-            <th>Qty</th>
-            <th>Harga Satuan</th>
-            <th>Total</th>
-            <th>Dibuat Oleh</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($incomingGoods as $goods)
-            @foreach($goods->items as $item)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($goods->received_date)->format('d-m-Y') }}</td>
-                    <td>{{ $goods->invoice }}</td>
-                    <td>{{ $goods->supplier->company_name ?? '-' }}</td>
-                    <td>{{ $item->goods->name ?? '-' }}</td>
-                    <td>{{ $item->final_qty }}</td>
-                    <td>{{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                    <td>{{ number_format($item->line_total, 0, ',', '.') }}</td>
-                    <td>{{ $goods->createdBy->name ?? '-' }}</td>
-                </tr>
-            @endforeach
-        @empty
+    <table>
+        <thead>
             <tr>
-                <td colspan="8" style="text-align: center;">Tidak ada data</td>
+                <th>No</th>
+                <th>Tanggal Terima</th>
+                <th>Supplier</th>
+                <th>No. Invoice</th>
+                <th>Barang</th>
+                <th>No. Batch</th>
+                <th>Expired</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Harga (Rp)</th>
+                <th>Subtotal (Rp)</th>
+                <th>Dibuat Oleh</th>
             </tr>
-        @endforelse
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            @php $no = 1; @endphp
+            @foreach($data as $row)
+                @foreach($row['items'] as $item)
+                    <tr>
+                        <td>{{ $no++ }}</td>
+                        <td>{{ $row['received_date'] }}</td>
+                        <td>{{ $row['supplier'] }}</td>
+                        <td>{{ $row['invoice'] }}</td>
+                        <td>{{ $item['goods'] }}</td>
+                        <td>{{ $item['batch_number'] }}</td>
+                        <td>{{ $item['expiry_date'] }}</td>
+                        <td>{{ $item['qty'] }}</td>
+                        <td>{{ $item['unit']['name'] }}</td>
+                        <td>{{ number_format($item['unit_price'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($item['line_total'], 0, ',', '.') }}</td>
+                        <td>{{ $row['created_by'] }}</td>
+                    </tr>
+                @endforeach
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>

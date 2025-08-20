@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\IncomingGoodsResource;
 use App\Services\IncomingGoodsService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class IncomingGoodsController extends Controller
@@ -18,25 +19,48 @@ class IncomingGoodsController extends Controller
         protected IncomingGoodsService $service
     ) {}
 
-    public function index()
-    {
-        $data = IncomingGoods::with([
+    public function index(Request $request)
+    {   
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        // $data = IncomingGoods::whereDate('received_date', '>=', Carbon::parse($startDate)->startOfDay())
+        //     ->whereDate('received_date', '<=', Carbon::parse($endDate)->endOfDay())
+        //     ->paginate(10);
+        // return $data;
+
+        $query = IncomingGoods::with([
             'supplier:id,company_name,contact_person_name',
             'items',
-            'items.goods' => function ($query) {
-                $query->select('id', 'name');
-            }, 
-            'items.batch' => function ($query) {
-                $query->select('id', 'incoming_goods_item_id', 'batch_number', 'expiry_date');
-            },
-            'items.unit' => function ($query) {
-                $query->select('id', 'name', 'status');
-            },
-            'createdBy:id,username'])
-            ->orderBy('received_date', 'desc')
+            'items.goods:id,name', 
+            'items.batch:id,incoming_goods_item_id,batch_number,expiry_date',
+            'items.unit:id,name,status',
+            'createdBy:id,username'
+        ]);
+        if ($startDate && $endDate) {
+            $query->whereDate('received_date', '>=', Carbon::parse($startDate)->startOfDay())
+                ->whereDate('received_date', '<=', Carbon::parse($endDate)->endOfDay());
+        }
+        $data = $query->orderBy('received_date', 'desc')
             ->paginate(10);
 
         return IncomingGoodsResource::collection($data);
+    }
+
+    // public function getFilteredData(Request $request)
+    // {
+    //         'items.unit:id,name,status',
+    //         'createdBy:id,username'])
+    //         ->orderBy('received_date', 'desc')
+    //         ->paginate(10);
+
+    //     return IncomingGoodsResource::collection($data);
+    // }
+
+    public function getFilteredData(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        return $request->all();
     }
 
     public function store(Request $request)
@@ -91,6 +115,21 @@ class IncomingGoodsController extends Controller
         return response(null,204);
     }
 
+    public function exportIncomingGoodsToPDF(Request $request)
+    {
+        $dataRequest = $request->all();
+
+        $data = $dataRequest['data'];
+        $filters = $dataRequest['filters'];
+        $filters['start_date'] = Carbon::parse($filters['start_date'])->format('d-m-Y');
+        $filters['end_date'] = Carbon::parse($filters['end_date'])->format('d-m-Y');
+
+        $pdf = Pdf::loadView('pdf.incoming_goods_report', compact('data', 'filters'))
+              ->setPaper('A4', 'landscape');
+
+        return $pdf->download('laporan-barang-masuk.pdf');
+    }
+
 //     public function downloadIncomingGoods(Request $request)
 // {
 //     $query = IncomingGoods::with([
@@ -143,63 +182,79 @@ class IncomingGoodsController extends Controller
 
 //     return $pdf->download('laporan-barang-masuk.pdf');
 // }
-public function downloadIncomingGoods(Request $request)
-{
-    $query = IncomingGoods::with([
-        'supplier', 
-        'items.goods', 
-        'items.unit', 
-        'items.batch',
-        'createdBy'
-    ]);
+    public function downloadIncomingGoods(Request $request)
+    {
+        $query = IncomingGoods::with([
+            'supplier', 
+            'items.goods', 
+            'items.unit', 
+            'items.batch',
+            'createdBy'
+        ]);
 
-    // Mode testing (hardcode tanggal)
-    $startDate = '2024-10-01';
-    $endDate   = '2025-08-09';
+        // Mode testing (hardcode tanggal)
+        $startDate = '2024-10-01';
+        $endDate   = '2025-08-09';
 
-    $query->whereDate('received_date', '>=', $startDate);
-    $query->whereDate('received_date', '<=', $endDate);
+        $query->whereDate('received_date', '>=', $startDate);
+        $query->whereDate('received_date', '<=', $endDate);
 
-    // Kalau mau tetap bisa pakai filter dari request
-    if ($request->filled('start_date')) {
-        $query->whereDate('received_date', '>=', $request->start_date);
+        // Kalau mau tetap bisa pakai filter dari request
+        if ($request->filled('start_date')) {
+            $query->whereDate('received_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('received_date', '<=', $request->end_date);
+        }
+
+        // Sorting (opsional)
+        switch ($request->input('sort')) {
+            case 'date-asc':
+                $query->orderBy('received_date', 'asc');
+                break;
+            case 'date-desc':
+                $query->orderBy('received_date', 'desc');
+                break;
+            default:
+                $query->latest();
+        }
+
+        $incomingGoods = $query->get();
+
+        // Data tambahan untuk laporan
+        $data = [
+            'incomingGoods' => $incomingGoods,
+            'printed_by' => auth()->user()->name ?? 'Guest',
+            'date' => now()->format('d-m-Y H:i'),
+            'filters' => $request->all(),
+        ];
+
+        // Load PDF view
+        $pdf = Pdf::loadView('pdf.incoming_goods_report', $data)
+                ->setPaper('A4', 'landscape');
+
+        return $pdf->download('laporan-barang-masuk.pdf');
     }
 
-    if ($request->filled('end_date')) {
-        $query->whereDate('received_date', '<=', $request->end_date);
+    public function exportIncomingGoodsExcel(Request $request)
+    {
+        return Excel::download(new IncomingGoodsExport($request), 'laporan-barang-masuk.xlsx');
     }
 
-    // Sorting (opsional)
-    switch ($request->input('sort')) {
-        case 'date-asc':
-            $query->orderBy('received_date', 'asc');
-            break;
-        case 'date-desc':
-            $query->orderBy('received_date', 'desc');
-            break;
-        default:
-            $query->latest();
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+        $incomingGoods = IncomingGoods::where('invoice', 'like', "%{$query}%")
+            ->with(['supplier:id,company_name,contact_person_name',
+                'items',
+                'items.goods:id,name', 
+                'items.batch:id,incoming_goods_item_id,batch_number,expiry_date',
+                'items.unit:id,name,status',
+                'createdBy:id,username'])
+            ->orderBy('received_date', 'desc')
+            ->paginate(10);
+        return $incomingGoods->toResourceCollection();
     }
-
-    $incomingGoods = $query->get();
-
-    // Data tambahan untuk laporan
-    $data = [
-        'incomingGoods' => $incomingGoods,
-        'printed_by' => auth()->user()->name ?? 'Guest',
-        'date' => now()->format('d-m-Y H:i'),
-        'filters' => $request->all(),
-    ];
-
-    // Load PDF view
-    $pdf = Pdf::loadView('pdf.incoming_goods_report', $data)
-              ->setPaper('A4', 'landscape');
-
-    return $pdf->download('laporan-barang-masuk.pdf');
-}
-public function exportIncomingGoodsExcel(Request $request)
-{
-    return Excel::download(new IncomingGoodsExport($request), 'laporan-barang-masuk.xlsx');
-}
 
 }

@@ -29,32 +29,39 @@
 </head>
 <body>
     <h2>Laporan Barang Keluar</h2>
-    <p class="small">Periode: {{ $date_range }}</p>
-    <p class="small">Dicetak: {{ $printed_at }}</p>
+    <p class="small">Periode: 
+        <strong>{{ $filters['start_date'] ?? '-' }}</strong> s/d 
+        <strong>{{ $filters['end_date'] ?? '-' }}</strong></p>
+    <p class="small">Dicetak: {{ now()->format('d-m-Y H:i') }}</p>
 
     <table>
         <thead>
             <tr>
+                <th>No</th>
                 <th>Tanggal</th>
                 <th>Invoice</th>
                 <th>Nama Barang</th>
                 <th>Satuan</th>
                 <th>Qty</th>
-                <th>Harga Satuan</th>
-                <th>Total</th>
+                <th>Harga Satuan (Rp)</th>
+                <th>Total (Rp)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($items as $row)
-                <tr>
-                    <td>{{ $row->date }}</td>
-                    <td>{{ $row->invoice }}</td>
-                    <td>{{ $row->goods_name }}</td>
-                    <td>{{ $row->unit_name }}</td>
-                    <td>{{ $row->final_qty }}</td>
-                    <td>{{ number_format($row->unit_price, 0, ',', '.') }}</td>
-                    <td>{{ number_format($row->line_total, 0, ',', '.') }}</td>
-                </tr>
+            @php $no = 1; @endphp
+            @foreach($data as $row)
+                @foreach($row['items'] as $item)
+                    <tr>
+                        <td>{{ $no++ }}</td>
+                        <td>{{ $row['date'] }}</td>
+                        <td>{{ $row['invoice'] }}</td>
+                        <td>{{ $item['goods'] }}</td>
+                        <td>{{ $item['unit']['name'] }}</td>
+                        <td>{{ $item['qty'] }}</td>
+                        <td>{{ number_format($item['unit_price'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($item['unit_price'] * $item['qty'], 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>

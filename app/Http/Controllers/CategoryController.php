@@ -27,7 +27,7 @@ class CategoryController extends Controller
             'name.required' => 'Nama Kategori wajib diisi',
             'name.unique' => 'Nama Kategori sudah ada',
         ]);
-        // return $validated;
+        return response($validated,500);
         $data = Category::create($validated);
         return response($data, 201);
     }
@@ -55,5 +55,12 @@ class CategoryController extends Controller
         $category->delete();
         return response(null, 204);
     }
-    
+
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+        $categories = Category::where('name', 'like', "%{$query}%")->paginate(10);
+        return $categories->toResourceCollection();
+    }
+
 }

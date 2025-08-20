@@ -260,4 +260,20 @@ class GoodsController extends Controller
 
         return response()->json($goods);
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+
+        $goods = Goods::where('name', 'like', "%{$query}%")
+            ->with([
+                'category:id,name',
+                'baseUnit:id,name',
+                'mediumUnit:id,name',
+                'largeUnit:id,name',
+                'batches:id,goods_id,qty'])
+            ->paginate(10);
+
+        return $goods->toResourceCollection();
+    }
 }

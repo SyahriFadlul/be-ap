@@ -21,12 +21,12 @@ class IncomingGoodsExport implements FromCollection, WithHeadings, WithMapping
     {
         $query = IncomingGoods::with(['supplier', 'items.goods', 'createdBy']);
 
-        if ($this->request->filled('start_date')) {
-            $query->whereDate('received_date', '>=', $this->request->start_date);
+        if ($this->request->filled('filters.start_date')) {
+            $query->whereDate('received_date', '>=', $this->request->filters['start_date']);
         }
 
-        if ($this->request->filled('end_date')) {
-            $query->whereDate('received_date', '<=', $this->request->end_date);
+        if ($this->request->filled('filters.end_date')) {
+            $query->whereDate('received_date', '<=', $this->request->filters['end_date']);
         }
 
         return $query->get();
@@ -59,7 +59,7 @@ class IncomingGoodsExport implements FromCollection, WithHeadings, WithMapping
                 $item->final_qty,
                 $item->unit_price,
                 $item->line_total,
-                $incomingGoods->createdBy->name ?? '-',
+                $incomingGoods->createdBy->username ?? '-',
             ];
         }
 

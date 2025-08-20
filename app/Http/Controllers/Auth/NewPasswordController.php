@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 
 class NewPasswordController extends Controller
-{
+{   
     /**
      * Handle an incoming new password request.
      *

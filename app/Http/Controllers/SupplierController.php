@@ -83,4 +83,11 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Terjadi kesalahan saat menghapus supplier.'], 500);
         }
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+        $suppliers = Supplier::where('company_name', 'like', "%{$query}%")->paginate(10);
+        return $suppliers->toResourceCollection();
+    }
 }
