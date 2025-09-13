@@ -33,8 +33,8 @@ Schedule::call(function () {
 
     if ($expiring->count() > 0) {
         broadcast(new InventoryNotification(
-            'Stok Menipis',
-            'Ada ' . $expiring->count() - 1 . ' barang yang stoknya di bawah minimum.'
+            'Barang Akan Kedaluwarsa',
+            'Ada ' . $expiring->count() . ' barang kadaluwarsa dalam 7 hari.'
         ));
     }
 
@@ -48,4 +48,4 @@ Schedule::call(function () {
             'Ada ' . $lowStock->count() . ' barang yang stoknya di bawah minimum.'
         ));
     }
-})->everyMinute();
+})->dailyAt('09:00');
