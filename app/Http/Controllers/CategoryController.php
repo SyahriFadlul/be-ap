@@ -27,7 +27,7 @@ class CategoryController extends Controller
             'name.required' => 'Nama Kategori wajib diisi',
             'name.unique' => 'Nama Kategori sudah ada',
         ]);
-        return response($validated,500);
+        // return response($validated,500);
         $data = Category::create($validated);
         return response($data, 201);
     }

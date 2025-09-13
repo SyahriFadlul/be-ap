@@ -19,7 +19,7 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             
-            $this->mergeWhen($request->routeIs('category.show', 'category.index'), [
+            $this->mergeWhen($request->routeIs('category.show', 'category.index', 'categories.search'), [
                 'note' => $this->description,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,

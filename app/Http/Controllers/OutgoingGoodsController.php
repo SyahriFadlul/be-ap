@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OutgoingGoodsExport;
 use App\Http\Resources\OutgoingGoodsResource;
 use App\Models\Goods;
 use App\Models\OutgoingGoods;
@@ -10,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OutgoingGoodsController extends Controller
 {
@@ -58,9 +60,9 @@ class OutgoingGoodsController extends Controller
 
     public function store(Request $request)
     {   
-        return response()->json([
-            'data' => $request->all(),
-        ],500);
+        // return response()->json([
+        //     'data' => $request->all(),
+        // ],500);
         try {
             $outgoing = $this->service->store($request->all(),auth()->user());
 
@@ -187,5 +189,10 @@ class OutgoingGoodsController extends Controller
             ->paginate(10);
 
         return $outgoingGoods->toResourceCollection();
+    }
+
+    public function exportOutgoingGoodsExcel(Request $request)
+    {
+        return Excel::download(new OutgoingGoodsExport($request), 'laporan-barang-keluar.xlsx');
     }
 }

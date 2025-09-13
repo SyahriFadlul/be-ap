@@ -24,23 +24,25 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
 Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login');
-Route::get('dashboard', [GraphicsDataController::class, 'dashboardData']);   
+Route::get('dashboard-data', [GraphicsDataController::class, 'dashboardData']);   
 Route::get('goods/{id}/unit', [GoodsController::class, 'getGoodsUnit']); 
 Route::get('outgoing-goods/available-goods/{id}',[OutgoingGoodsController::class,'searchAvailableGoods']);
 // Route::get('testeringago',[GoodsController::class,'updatebatchestobase']);
 // Route::get('pricingango',[GoodsController::class,'updatepricegoodsbatches']);
 Route::get('/expiring-goods', [GoodsController::class, 'expiringGoods']);
 Route::get('/incoming-goods/download', [IncomingGoodsController::class, 'downloadIncomingGoods']);
-Route::post('/incoming-goods/export-excel', [IncomingGoodsController::class, 'exportIncomingGoodsExcel']);
 Route::get('/outgoing-goods/report', [OutgoingGoodsController::class, 'download']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('goods/search', [GoodsController::class, 'search']);
-    Route::get('outgoing-goods/search', [OutgoingGoodsController::class, 'search']);
-    Route::get('incoming-goods/search', [IncomingGoodsController::class, 'search']);
-    Route::get('suppliers/search', [SupplierController::class, 'search']);
-    Route::get('categories/search', [CategoryController::class, 'search']);
+    Route::post('/incoming-goods/export-excel', [IncomingGoodsController::class, 'exportIncomingGoodsExcel']);
+    Route::post('/outgoing-goods/export-excel', [OutgoingGoodsController::class, 'exportOutgoingGoodsExcel']);
+    Route::get('goods/search', [GoodsController::class, 'search'])->name('goods.search');
+    Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('outgoing-goods/search', [OutgoingGoodsController::class, 'search'])->name('outgoing-goods.search');
+    Route::get('incoming-goods/search', [IncomingGoodsController::class, 'search'])->name('incoming-goods.search');
+    Route::get('suppliers/search', [SupplierController::class, 'search'])->name('suppliers.search');
+    Route::get('categories/search', [CategoryController::class, 'search'])->name('categories.search');
     Route::get('goods/select', [GoodsController::class, 'selectSuggestions']);
     Route::post('goods/{goods}/batches', [GoodsController::class, 'getAvailableGoodsBatches']);
     Route::post('user/{id}/role', [UserController::class,'getUserRole']);

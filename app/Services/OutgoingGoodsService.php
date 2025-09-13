@@ -28,7 +28,7 @@ class OutgoingGoodsService
                 'items.*.qty' => 'required|numeric|min:1',
                 'items.*.unit_id' => 'required|exists:units,id',
                 'items.*.unit' => 'required|array',
-                'items.*.unit.*.status' => 'required|in:base,medium,large',
+                'items.*.unit.status' => 'required|in:base,medium,large',
                 'items.*.unit_price' => 'required|numeric|min:0',
             ]);
 
@@ -56,7 +56,7 @@ class OutgoingGoodsService
                     'line_total' => $item['qty'] * $item['unit_price'],
                 ]);
                 
-                $unitSize = strtolower($item['unit'][0]['status']);
+                $unitSize = strtolower($item['unit']['status']);
                 $goods = Goods::findOrFail($item['goods_id']);
                 $batch = GoodsBatch::findOrFail($item['batch_id']);
 

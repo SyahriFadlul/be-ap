@@ -126,4 +126,11 @@ class UserController extends Controller
             'role' => $role[0]
         ],200);
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+        $users = User::where('username', 'like', "%{$query}%")->paginate(10);
+        return $users->toResourceCollection();
+    }
 }

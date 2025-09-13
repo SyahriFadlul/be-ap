@@ -24,9 +24,9 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'company_name' => 'required|string|unique:suppliers,company_name',
-            'company_phone' => 'required|numeric|digits:20',
+            'company_phone' => 'required|numeric|max_digits:20',
             'contact_person_name' => 'required',
-            'contact_person_phone' => 'required|numeric|digits:20',
+            'contact_person_phone' => 'required|numeric|max_digits:20',
             'note' => 'nullable',
         ],
         [

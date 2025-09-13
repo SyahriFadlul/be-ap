@@ -19,7 +19,7 @@ class GoodsResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
 
-            $this->mergeWhen($request->routeIs('goods.show', 'goods.index'), [
+            $this->mergeWhen($request->routeIs('goods.show', 'goods.index', 'goods.search'), [
                 'category_id' => new CategoryResource($this->whenLoaded('category'))->id,
                 'category' => new CategoryResource($this->whenLoaded('category'))->name,
                 'base_unit_id' => $this->whenLoaded('baseUnit', fn () => $this->baseUnit->id),

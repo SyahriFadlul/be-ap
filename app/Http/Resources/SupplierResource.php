@@ -18,8 +18,8 @@ class SupplierResource extends JsonResource
         return [
             'id' => $this->id,
             'company_name' => $this->company_name ?? $this->contact_person_name,
-            
-            $this->mergeWhen($request->routeIs('supplier.show', 'supplier.index'), [
+
+            $this->mergeWhen($request->routeIs('supplier.show', 'supplier.index','suppliers.search'), [
                 // 'company_name' => $this->company_name,
                 'company_phone' => $this->company_phone,
                 'contact_person_name' => $this->contact_person_name,

@@ -261,6 +261,18 @@ class GoodsController extends Controller
         return response()->json($goods);
     }
 
+    public function lowStockGoods()
+    {
+        $lowStockCount = Goods::whereHas('batches', function ($q) {
+            $q->select('goods_id', DB::raw('SUM(stock) / goods.conversion_medium_to_base AS stock_in_medium'))
+            ->join('goods', 'goods.id', '=', 'goods_batches.goods_id')
+            ->groupBy('goods_id', 'goods.conversion_medium_to_base')
+            ->havingRaw('stock_in_medium < 5');
+        })->count();
+
+        return $lowStockCount;
+    }
+
     public function search(Request $request)
     {
         $query = $request->query('query');

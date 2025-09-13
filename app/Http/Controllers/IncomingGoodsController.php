@@ -89,9 +89,9 @@ class IncomingGoodsController extends Controller
 
     public function update(Request $request, $id)
     {   
-        return response()->json([
-            'data' => $request->all()
-        ],500);
+        // return response()->json([
+        //     'data' => $request->all()
+        // ],500);
         try {
             $incoming = $this->service->update($request->all(), $id, auth()->user());
 
